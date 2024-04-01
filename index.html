@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-gap: 20px;
+        }
+        form {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        form label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        form input[type="text"],
+        form input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        form button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        form button:hover {
+            background-color: #0056b3;
+        }
+        #personsList {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>User Management System</h1>
+    <div class="container">
+        <div>
+            <h2>Add Person</h2>
+            <form id="addPersonForm">
+                <label for="firstName">First Name:</label>
+                <input type="text" id="firstName" name="firstName" required>
+                <label for="lastName">Last Name:</label>
+                <input type="text" id="lastName" name="lastName" required>
+                <label for="age">Age:</label>
+                <input type="number" id="age" name="age" required>
+                <button type="submit">Add Person</button>
+            </form>
+        </div>
+        <div>
+            <h2>Delete Person</h2>
+            <form id="deletePersonForm">
+                <label for="deleteUserId">User ID:</label>
+                <input type="number" id="deleteUserId" name="deleteUserId" required>
+                <button type="submit">Delete Person</button>
+            </form>
+        </div>
+        <div>
+            <h2>Update Person</h2>
+            <form id="updatePersonForm">
+                <label for="updateUserId">User ID:</label>
+                <input type="number" id="updateUserId" name="updateUserId" required>
+                <!-- Add fields for updating user information -->
+                <button type="submit">Update Person</button>
+            </form>
+        </div>
+        <div>
+            <h2>List Persons</h2>
+            <button id="listPersonsButton">List Persons</button>
+            <div id="personsList"></div>
+        </div>
+    </div>
+    <script>
+        // JavaScript code for interacting with the API endpoints
+        document.getElementById('addPersonForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            fetch('/api/add_person', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Basic ' + btoa('admin:admin')
+                },
+                body: JSON.stringify({
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    age: parseInt(document.getElementById('age').value),
+                    // Add more fields for other user information
+                })
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+        });
+
+        document.getElementById('deletePersonForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            fetch('/api/delete_person/' + document.getElementById('deleteUserId').value, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Basic ' + btoa('admin:admin')
+                }
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+        });
+
+        document.getElementById('updatePersonForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            fetch('/api/update_person/' + document.getElementById('updateUserId').value, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Basic ' + btoa('admin:admin')
+                },
+                body: JSON.stringify({
+                    // Add fields for updating user information
+                })
+            })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+        });
+
+        document.getElementById('listPersonsButton').addEventListener('click', function() {
+            fetch('/api/list_persons', {
+                headers: {
+                    'Authorization': 'Basic ' + btoa('admin:admin')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('personsList').innerHTML = JSON.stringify(data, null, 2);
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
+
